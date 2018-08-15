@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/adejoux/influxdbclient"
-	"github.com/adejoux/nmon2influxdb/nmon2influxdblib"
+	"github.com/yhwang/nmon2influxdb/nmon2influxdblib"
 	"github.com/codegangsta/cli"
 )
 

@@ -38,6 +38,7 @@ type Config struct {
 	GrafanaURL            string `toml:"grafana_URL"`
 	GrafanaAccess         string
 	GrafanaDatasource     string
+	GrafanaDashboardName  string
 	HMCServer             string `toml:"hmc_server"`
 	HMCUser               string `toml:"hmc_user"`
 	HMCPassword           string `toml:"hmc_password"`
@@ -104,6 +105,7 @@ func InitConfig() Config {
 		GrafanaURL:            "http://localhost:3000",
 		GrafanaAccess:         "direct",
 		GrafanaDatasource:     "nmon2influxdb",
+		GrafanaDashboardName:  "",
 		ImportSkipDisks:       false,
 		ImportAllCpus:         false,
 		ImportBuildDashboard:  false,
@@ -234,6 +236,7 @@ func ParseParameters(c *cli.Context) (config *Config) {
 	config.GrafanaAccess = c.String("gaccess")
 	config.GrafanaURL = c.String("gurl")
 	config.GrafanaDatasource = c.String("datasource")
+	config.GrafanaDashboardName = c.String("dashboardName")
 	config.Debug = c.GlobalBool("debug")
 	config.DebugFile = c.GlobalString("debug-file")
 	config.HMCServer = c.String("hmc")

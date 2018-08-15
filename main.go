@@ -9,9 +9,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/adejoux/nmon2influxdb/hmc"
-	"github.com/adejoux/nmon2influxdb/nmon"
-	"github.com/adejoux/nmon2influxdb/nmon2influxdblib"
+	"github.com/yhwang/nmon2influxdb/hmc"
+	"github.com/yhwang/nmon2influxdb/nmon"
+	"github.com/yhwang/nmon2influxdb/nmon2influxdblib"
 	"github.com/codegangsta/cli"
 )
 
@@ -150,6 +150,11 @@ func main() {
 					Name:  "datasource",
 					Usage: "grafana datasource",
 					Value: config.GrafanaDatasource,
+				},
+				cli.StringFlag{
+					Name:  "dashboardName",
+					Usage: "dashboardName name",
+					Value: config.GrafanaDashboardName,
 				},
 			},
 			Action: nmon.Dashboard,

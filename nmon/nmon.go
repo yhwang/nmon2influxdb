@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/adejoux/nmon2influxdb/nmon2influxdblib"
+	"github.com/yhwang/nmon2influxdb/nmon2influxdblib"
 )
 
 // Nmon structure used to manage nmon files

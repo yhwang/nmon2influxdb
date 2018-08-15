@@ -15,7 +15,7 @@ import (
 	"sort"
 
 	"github.com/adejoux/grafanaclient"
-	"github.com/adejoux/nmon2influxdb/nmon2influxdblib"
+	"github.com/yhwang/nmon2influxdb/nmon2influxdblib"
 	"github.com/codegangsta/cli"
 )
 
@@ -25,7 +25,7 @@ var cpuRegexp = regexp.MustCompile(`^CPU\d+`)
 const panelSize = "300px"
 const linux = "linux"
 const aix = "aix"
-const dataSource = "nmon2influxdb"
+var dataSource = "nmon2influxdb"
 
 // Dashboard entry point for nmon dashboard sub command
 func Dashboard(c *cli.Context) {
@@ -85,6 +85,8 @@ func DashboardTemplate(config *nmon2influxdblib.Config, file string) {
 		nmon2influxdblib.CheckError(err)
 	}
 
+	dashboard.Title = config.GrafanaDashboardName
+	log.Printf("dashboard name:%s\n", dashboard.Title)
 	err = nmon.UploadDashboard(dashboard)
 	nmon2influxdblib.CheckError(err)
 	return
@@ -812,32 +814,6 @@ func (nmon *Nmon) InitGrafanaSession() *grafanaclient.Session {
 	resDs, err := grafana.GetDataSource(nmon.Config.GrafanaDatasource)
 	nmon2influxdblib.CheckError(err)
 	if resDs.Name == "" {
-		plugins, err := grafana.GetDataSourcePlugins()
-
-		//grafana 3.0 new plugin architecture
-		if err.Error() == "HTTP 404: Data source not found" {
-			plugins, pluginErr := grafana.GetPlugins("datasource")
-			nmon2influxdblib.CheckError(pluginErr)
-
-			status := ""
-			for _, plugin := range plugins {
-				if plugin.ID == "influxdb" {
-					status = "ok"
-				}
-			}
-
-			if status != "ok" {
-				log.Printf("No plugin for influxDB in Grafana !\n")
-				os.Exit(1)
-			}
-		} else {
-			nmon2influxdblib.CheckError(err)
-			if _, present := plugins["influxdb"]; !present {
-				log.Printf("No plugin for influxDB in Grafana !\n")
-				os.Exit(1)
-			}
-		}
-
 		var ds = grafanaclient.DataSource{Name: nmon.Config.GrafanaDatasource,
 			Type:      "influxdb",
 			Access:    nmon.Config.GrafanaAccess,
@@ -852,11 +828,16 @@ func (nmon *Nmon) InitGrafanaSession() *grafanaclient.Session {
 		log.Printf("Grafana %s DataSource created.\n", nmon.Config.GrafanaDatasource)
 	}
 
+	dataSource = nmon.Config.GrafanaDatasource
 	return grafana
 }
 
 //UploadDashboard upload dashboard to current grafana instance
 func (nmon *Nmon) UploadDashboard(dashboard grafanaclient.Dashboard) (err error) {
+	if nmon.Config.GrafanaDashboardName != "" {
+		dashboard.Title = nmon.Config.GrafanaDashboardName
+	}
+	log.Printf("UploadDashboard: %s\n", dashboard.Title)
 	grafana := nmon.InitGrafanaSession()
 
 	err = grafana.UploadDashboard(dashboard, true)
